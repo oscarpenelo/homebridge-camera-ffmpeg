@@ -461,7 +461,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
   				"a=fmtp:110 profile-level-id=1; mode=AAC-hbr; sizelength=13; indexlength=3; indexdeltalength=3; config=F8EA2000\n" + // todo?: put sample rate into config= too
   				"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:" + audioKey.toString('base64');
 
-   			var speakerSdpFilename = "/var/lib/homebridge/" + this.name.replace(/\s+/g, '_') + "_speaker.sdp"; // todo: filter all illegal filename chars from this.name
+   			var speakerSdpFilename = "/homebridge/" + this.name.replace(/\s+/g, '_') + "_speaker.sdp"; // todo: filter all illegal filename chars from this.name
    			this.speakerSource = ' -max_ts_probe 0 -protocol_whitelist file,udp,rtp -i ' + speakerSdpFilename;
    			this.speakerOut = (typeof this.audio === "string" && this.audio.length > 4) ? this.audio.substring(4) : ' -y speaker.mp4';
    			this.speakerCommand = this.speakerSource + this.speakerOut;
