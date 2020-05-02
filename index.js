@@ -174,11 +174,13 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  gpio.write(24, true)
-  setTimeout(() => {
-    gpio.write(24, false)
+  if(turnOn) {
+    gpio.write(24, true)
+    setTimeout(() => {
+      gpio.write(24, false)
 
-  },2*1000);
+    }, 2 * 1000);
+  }
   callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
