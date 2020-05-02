@@ -125,13 +125,13 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       var motion = new Service.MotionSensor(cameraName);
       cameraAccessory.addService(motion);
       motion.getCharacteristic(Characteristic.MotionDetected)
-          .on('get', self.getmotion.bind(cameraAccessory));
+          .on('get', self.getmotion.bind(self));
 
       var button = new Service.Switch(cameraName);
       cameraAccessory.addService(button);
 
       button.getCharacteristic(Characteristic.On)
-          .on('set', self.setlocker.bind(this))
+          .on('set', self.setlocker.bind(self))
 
       button.setCharacteristic(
           Characteristic.On,
@@ -174,17 +174,17 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  gpio.write(that.lockergpio, true)
+  gpio.write(this.lockergpio, true)
   setTimeout(() => {
-    gpio.write(that.lockergpio, false)
+    gpio.write(this.lockergpio, false)
 
-  },that.lockerseconds*1000);
+  },this.lockerseconds*1000);
   callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
   var self = this;
 
-  callback(null, that.belldetected);
+  callback(null, this.belldetected);
 };
 
 function _Motion(on, callback) {
