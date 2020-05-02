@@ -19,10 +19,10 @@ function ffmpegPlatform(log, config, api) {
   self.unlocked=false
   self.log = log;
   self.config = config || {};
-  self.bellgpio= config.bell.gpio;
-  self.bellpowergpio=config.bell.powergpio;
-  self.lockergpio=config.locker.gpio;
-  self.lockerseconds=config.locker.seconds;
+  self.bellgpio= Number(config.bell.gpio);
+  self.bellpowergpio=Number(config.bell.powergpio);
+  self.lockergpio=Number(config.locker.gpio);
+  self.lockerseconds=Number(config.locker.seconds);
   if (api) {
     self.api = api;
 
