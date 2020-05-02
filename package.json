@@ -1,18 +1,15 @@
 {
-  "displayName": "Homebridge Camera FFmpeg",
-  "name": "homebridge-camera-ffmpeg",
-  "version": "0.1.17",
-  "description": "ffmpeg plugin for homebridge: https://github.com/nfarina/homebridge",
+  "displayName": "Homebridge Camera FFmpeg Doorbell",
+  "name": "homebridge-camera-ffmpeg-doorbell",
+  "version": "0.1.19",
+  "description": " https://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell",
   "license": "ISC",
   "keywords": [
     "homebridge-plugin"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/KhaosT/homebridge-camera-ffmpeg.git"
-  },
-  "bugs": {
-    "url": "http://github.com/KhaosT/homebridge-camera-ffmpeg/issues"
+    "url": "git://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell.git"
   },
   "engines": {
     "node": ">=5.0.0",
@@ -22,6 +19,16 @@
     "googleapis": ">=39.1.0",
     "ffmpeg-for-homebridge": "0.0.4",
     "ip": "^1.1.3",
+    "rpi-gpio": "*",
     "debug": "^2.2.0"
-  }
+  },
+  "homepage": "https://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": ""
 }

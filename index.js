@@ -1,4 +1,5 @@
 var Accessory, Service, Characteristic, hap, UUIDGen;
+var gpio = require("rpi-gpio");
 
 var FFMPEG = require('./ffmpeg').FFMPEG;
 
@@ -9,15 +10,19 @@ module.exports = function(homebridge) {
   Characteristic = homebridge.hap.Characteristic;
   UUIDGen = homebridge.hap.uuid;
 
-  homebridge.registerPlatform("homebridge-camera-ffmpeg", "Camera-ffmpeg", ffmpegPlatform, true);
+  homebridge.registerPlatform("homebridge-camera-ffmpeg-doorbell", "Camera-ffmpeg", ffmpegPlatform, true);
 }
 
 function ffmpegPlatform(log, config, api) {
   var self = this;
-
+  self.belldetected= false;
+  self.unlocked=false
   self.log = log;
   self.config = config || {};
-
+  self.bellgpio= config.bell.gpio;
+  self.bellpowergpio=config.bell.powergpio;
+  self.lockergpio=config.locker.gpio;
+  self.lockerseconds=config.locker.seconds;
   if (api) {
     self.api = api;
 
@@ -37,6 +42,15 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
   var self = this;
   var videoProcessor = self.config.videoProcessor || 'ffmpeg';
   var interfaceName = self.config.interfaceName || '';
+
+
+
+
+
+
+
+
+
 
   if (self.config.cameras) {
     var configuredAccessories = [];
@@ -67,17 +81,63 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
         cameraAccessoryInfo.setCharacteristic(Characteristic.FirmwareRevision, cameraConfig.firmwareRevision);
       }
 
+
+
+
+
+
       cameraAccessory.context.log = self.log;
-      if (cameraConfig.motion) {
-        var button = new Service.Switch(cameraName);
-        cameraAccessory.addService(button);
 
-        var motion = new Service.MotionSensor(cameraName);
-        cameraAccessory.addService(motion);
 
-        button.getCharacteristic(Characteristic.On)
-          .on('set', _Motion.bind(cameraAccessory));
-      }
+
+      gpio.setup(self.bellgpio, gpio.DIR_IN, gpio.EDGE_FALLING, function (err) {
+        if (err != undefined) {
+          that.log("Error setting up gpio pin: " + that.pin);
+          that.log(err);
+        }
+
+        that.log("GPIO setup completed");
+
+        gpio.on("change", function (channel, val) {
+          that.gpioChange(that, channel, val);
+        });
+      });
+      gpio.setup(self.bellpowergpio, gpio.DIR_OUT, function (err) {
+        if (err != undefined) {
+          that.log("Error setting up gpio pin: " + that.pin);
+          that.log(err);
+        }
+
+        that.log("GPIO setup completed");
+        return gpio.write(that.pin, true)
+
+      });
+      gpio.setup(self.lockergpio, gpio.DIR_OUT, function (err) {
+        if (err != undefined) {
+          that.log("Error setting up gpio pin: " + that.pin);
+          that.log(err);
+        }
+
+        that.log("GPIO setup completed");
+        return gpio.write(that.pin, false)
+
+      });
+      var motion = new Service.MotionSensor(cameraName);
+      cameraAccessory.addService(motion);
+      motion.getCharacteristic(Characteristic.MotionDetected)
+          .on('get', _getMotion.bind(cameraAccessory));
+
+      var button = new Service.Switch(cameraName);
+      cameraAccessory.addService(button);
+
+      button.getCharacteristic(Characteristic.On)
+          .on('set', _setLocker.bind(this))
+
+      button.setCharacteristic(
+          Characteristic.On,
+          Boolean(self.unlocked)
+      )
+
 
       var cameraSource = new FFMPEG(hap, cameraConfig, self.log, videoProcessor, interfaceName);
       cameraAccessory.configureCameraSource(cameraSource);
@@ -86,6 +146,46 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
+};
+ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
+  if (!that.belldetected) {
+    that.belldetected = true;
+    that.log("Got GPIO rising edge event");
+    gpio.write(this.bellpowergpio, false)
+    setTimeout(() => {
+      gpio.write(this.bellpowergpio, false)
+
+
+    },250);
+    that.service.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(that.belldetected, null, "gpioChange");
+
+    if (that.timeout) clearTimeout(that.timeout);
+
+    that.timeout = setTimeout(function () {
+      that.log("Resetting gpio change event throttle flag");
+      that.bellDetected = false;
+
+      that.service.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(that.belldetected, null, "gpioChange");
+
+      that.timeout = null;
+    }, that.reset);
+  }
+};
+function _setLocker (turnOn, callback) {
+  gpio.write(this.lockergpio, true)
+  setTimeout(() => {
+    gpio.write(this.lockergpio, false)
+
+
+  },this.lockerseconds*1000);
+  callback()
+}
+function _getMotion(callback) {
+  var self = this;
+
+  callback(null, self.belldetected);
 };
 
 function _Motion(on, callback) {
