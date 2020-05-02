@@ -92,33 +92,27 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
       gpio.setup(23, gpio.DIR_IN, gpio.EDGE_FALLING, function (err) {
         if (err != undefined) {
-          that.log("Error setting up gpio pin: " + that.pin);
-          that.log(err);
+
         }
 
-        that.log("GPIO setup completed");
 
         gpio.on("change", function (channel, val) {
-          that.gpioChange(that, channel, val);
+          self.gpioChange(self, channel, val);
         });
       });
       gpio.setup(25, gpio.DIR_OUT, function (err) {
         if (err != undefined) {
-          that.log("Error setting up gpio pin: " + that.pin);
-          that.log(err);
+
         }
 
-        that.log("GPIO setup completed");
         return gpio.write(25, true)
 
       });
       gpio.setup(24, gpio.DIR_OUT, function (err) {
         if (err != undefined) {
-          that.log("Error setting up gpio pin: " + that.pin);
-          that.log(err);
+
         }
 
-        that.log("GPIO setup completed");
         return gpio.write(24, false)
 
       });
