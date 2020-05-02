@@ -169,6 +169,11 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
   if(turnOn) {
+
+
+    this.log("turnon");
+
+
     gpio.write(24, true)
     setTimeout(() => {
       gpio.write(24, false)
@@ -178,6 +183,8 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
   callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
+  this.log("getmotion");
+
   var self = this;
 
   callback(null, this.belldetected);
