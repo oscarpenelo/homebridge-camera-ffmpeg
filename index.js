@@ -182,7 +182,7 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
   },this.lockerseconds*1000);
   callback()
 }
-ffmpegPlatform.prototype.getmotion =  fucntion (callback) {
+ffmpegPlatform.prototype.getmotion =  function (callback) {
   var self = this;
 
   callback(null, self.belldetected);
