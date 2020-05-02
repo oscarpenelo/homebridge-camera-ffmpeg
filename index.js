@@ -125,13 +125,13 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       var motion = new Service.MotionSensor(cameraName);
       cameraAccessory.addService(motion);
       motion.getCharacteristic(Characteristic.MotionDetected)
-          .on('get', this.getMotion.bind(cameraAccessory));
+          .on('get', self.getmotion.bind(cameraAccessory));
 
       var button = new Service.Switch(cameraName);
       cameraAccessory.addService(button);
 
       button.getCharacteristic(Characteristic.On)
-          .on('set', this.setlocker.bind(this))
+          .on('set', self.setlocker.bind(this))
 
       button.setCharacteristic(
           Characteristic.On,
