@@ -90,7 +90,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
 
 
-      gpio.setup(self.bellgpio, gpio.DIR_IN, gpio.EDGE_FALLING, function (err) {
+      gpio.setup(23, gpio.DIR_IN, gpio.EDGE_FALLING, function (err) {
         if (err != undefined) {
           that.log("Error setting up gpio pin: " + that.pin);
           that.log(err);
@@ -102,24 +102,24 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
           that.gpioChange(that, channel, val);
         });
       });
-      gpio.setup(self.bellpowergpio, gpio.DIR_OUT, function (err) {
+      gpio.setup(25, gpio.DIR_OUT, function (err) {
         if (err != undefined) {
           that.log("Error setting up gpio pin: " + that.pin);
           that.log(err);
         }
 
         that.log("GPIO setup completed");
-        return gpio.write(that.pin, true)
+        return gpio.write(25, true)
 
       });
-      gpio.setup(self.lockergpio, gpio.DIR_OUT, function (err) {
+      gpio.setup(24, gpio.DIR_OUT, function (err) {
         if (err != undefined) {
           that.log("Error setting up gpio pin: " + that.pin);
           that.log(err);
         }
 
         that.log("GPIO setup completed");
-        return gpio.write(that.pin, false)
+        return gpio.write(24, false)
 
       });
       var motion = new Service.MotionSensor(cameraName);
@@ -151,9 +151,9 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
   if (!that.belldetected) {
     that.belldetected = true;
     that.log("Got GPIO rising edge event");
-    gpio.write(this.bellpowergpio, false)
+    gpio.write(25, false)
     setTimeout(() => {
-      gpio.write(this.bellpowergpio, false)
+      gpio.write(25, false)
 
 
     },250);
@@ -174,11 +174,11 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  gpio.write(this.lockergpio, true)
+  gpio.write(24, true)
   setTimeout(() => {
-    gpio.write(this.lockergpio, false)
+    gpio.write(24, false)
 
-  },this.lockerseconds*1000);
+  },2*1000);
   callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
