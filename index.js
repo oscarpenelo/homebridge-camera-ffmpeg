@@ -174,18 +174,17 @@ ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  gpio.write(this.lockergpio, true)
+  gpio.write(that.lockergpio, true)
   setTimeout(() => {
-    gpio.write(this.lockergpio, false)
+    gpio.write(that.lockergpio, false)
 
-
-  },this.lockerseconds*1000);
+  },that.lockerseconds*1000);
   callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
   var self = this;
 
-  callback(null, self.belldetected);
+  callback(null, that.belldetected);
 };
 
 function _Motion(on, callback) {
