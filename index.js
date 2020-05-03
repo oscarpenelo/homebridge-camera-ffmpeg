@@ -191,15 +191,13 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
     rpio.write(this.lockerpin, rpio.LOW);
     rpio.sleep(this.lockerseconds);
     rpio.write(this.lockerpin, rpio.HIGH);
+    this.switch.setCharacteristic(Characteristic.LockTargetState, 1)
 
+  }
+  else{
     this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
     this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
-  }
-  else{
-    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
-
-    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(0)
 
   }
   callback()
