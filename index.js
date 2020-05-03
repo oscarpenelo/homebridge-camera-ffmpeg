@@ -190,12 +190,13 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
     rpio.write(this.lockerpin, rpio.HIGH);
     this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
-    callback()
   }
   else{
     this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
   }
+  callback()
+
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
   this.log("getmotion");
