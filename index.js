@@ -181,29 +181,26 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  if(turnOn===0) {
-    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
+  if(turnOn===Characteristic.LockTargetState.UNSECURED) {
+    callback()
 
-    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(0)
+    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(Characteristic.LockCurrentState.UNSECURED)
 
     this.log("turnon");
 
     rpio.write(this.lockerpin, rpio.LOW);
     rpio.sleep(this.lockerseconds);
     rpio.write(this.lockerpin, rpio.HIGH);
-    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
-    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
-    this.switch.setCharacteristic(Characteristic.LockTargetState, 1)
+    this.switch.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
   }
   else{
-    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
+    callback()
 
-    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
+    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(Characteristic.LockCurrentState.SECURED)
 
   }
-  callback()
 
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
