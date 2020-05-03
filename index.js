@@ -1,5 +1,5 @@
 var Accessory, Service, Characteristic, hap, UUIDGen;
-var gpio = require("rpi-gpio");
+var rpio = require('rpio');
 
 var FFMPEG = require('./ffmpeg').FFMPEG;
 
@@ -12,16 +12,47 @@ module.exports = function(homebridge) {
 
   homebridge.registerPlatform("homebridge-camera-ffmpeg-doorbell", "Camera-ffmpeg", ffmpegPlatform, true);
 }
-
+/*
+ {
+            "cameras": [
+                {
+                    "name": "Pi Cam",
+                    "videoConfig": {
+                        "source": "-f alsa -ac 1 -thread_queue_size 2048 -i hw:1 -f image2 -loop 1 -pix_fmt rgb24 -i /homebridge/image.jpg -vsync 0 -af aresample=async=1",
+                        "stillImageSource": "-f image2 -loop 1 -pix_fmt yuvj422p -s 640x640 -i /homebridge/image.jpg",
+                        "maxStreams": 2,
+                        "maxWidth": 1270,
+                        "maxHeight": 720,
+                        "maxFPS": 30,
+                        "maxBitrate": 10,
+                        "mapvideo": "1,0",
+                        "packetSize": 188,
+                        "mapaudio": "0,0",
+                        "audio": "2way -f alsa default",
+                        "debug": true
+                    }
+                }
+            ],
+            "bell": {
+                "pin": 16,
+                "powerpin": 22
+            },
+            "locker": {
+                "pin": 18,
+                "seconds": 2
+            },
+            "platform": "Camera-ffmpeg"
+        }
+ */
 function ffmpegPlatform(log, config, api) {
   var self = this;
   self.belldetected= false;
   self.unlocked=false
   self.log = log;
   self.config = config || {};
-  self.bellgpio= Number(config.bell.gpio);
-  self.bellpowergpio=Number(config.bell.powergpio);
-  self.lockergpio=Number(config.locker.gpio);
+  self.bellpin= Number(config.bell.pin);
+  self.bellpowerpin=Number(config.bell.powerpin);
+  self.lockerpin=Number(config.locker.pin);
   self.lockerseconds=Number(config.locker.seconds);
   if (api) {
     self.api = api;
@@ -87,35 +118,12 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
 
       cameraAccessory.context.log = self.log;
+      rpio.open(self.bellpowerpin, rpio.OUTPUT, rpio.HIGH);
+      rpio.open(self.bellpin, rpio.INPUT);
+      rpio.poll(self.bellpin, self.gpioChange, rpio.POLL_LOW);
+      rpio.open(self.lockerpin, rpio.OUTPUT, rpio.HIGH);
 
 
-
-      gpio.setup(23, gpio.DIR_IN, gpio.EDGE_FALLING, function (err) {
-        if (err != undefined) {
-
-        }
-
-
-        gpio.on("change", function (channel, val) {
-          self.gpioChange(self, channel, val);
-        });
-      });
-      gpio.setup(25, gpio.DIR_OUT, function (err) {
-        if (err != undefined) {
-
-        }
-
-        return gpio.write(25, true)
-
-      });
-      gpio.setup(24, gpio.DIR_OUT, function (err) {
-        if (err != undefined) {
-
-        }
-
-        return gpio.write(24, false)
-
-      });
       var motion = new Service.MotionSensor(cameraName);
       cameraAccessory.addService(motion);
       motion.getCharacteristic(Characteristic.MotionDetected)
@@ -126,7 +134,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
       button.getCharacteristic(Characteristic.On)
           .on('set', self.setlocker.bind(self))
-
+      self.switch=button
       button.setCharacteristic(
           Characteristic.On,
           Boolean(self.unlocked)
@@ -141,13 +149,18 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
 };
-ffmpegPlatform.prototype.gpioChange = function (that, channel, val) {
+ffmpegPlatform.prototype.gpioChange = function (pin) {
+  var that=self
   if (!that.belldetected) {
     that.belldetected = true;
-    that.log("Got GPIO rising edge event");
-    gpio.write(25, false)
+
+    that.log("POWER OFF");
+    rpio.write(self.bellpowerpin, rpio.LOW);
+
     setTimeout(() => {
-      gpio.write(25, false)
+      that.log("POWER ON");
+
+      rpio.write(self.bellpowerpin, rpio.HIGH);
 
 
     },250);
@@ -173,14 +186,13 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
 
     this.log("turnon");
 
+    rpio.write(self.lockerpin, rpio.LOW);
+    rpio.sleep(self.lockerseconds);
+    rpio.write(self.lockerpin, rpio.HIGH);
+    self.switch.getCharacteristic(Characteristic.On).updateValue(false);
 
-    gpio.write(24, true)
-    setTimeout(() => {
-      gpio.write(24, false)
-
-    }, 2 * 1000);
+    callback()
   }
-  callback()
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
   this.log("getmotion");
