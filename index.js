@@ -2,7 +2,6 @@ var Accessory, Service, Characteristic, hap, UUIDGen;
 var rpio = require('rpio');
 
 var FFMPEG = require('./ffmpeg').FFMPEG;
-var MODULE=null
 module.exports = function(homebridge) {
   Accessory = homebridge.platformAccessory;
   hap = homebridge.hap;
@@ -124,7 +123,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
       rpio.write(self.bellpowerpin, rpio.HIGH);
       rpio.open(self.bellpin, rpio.INPUT);
-      rpio.poll(self.bellpin, self.gpioChange, rpio.POLL_LOW);
+      rpio.poll(self.bellpin, self.gpioChange.bind(self), rpio.POLL_LOW);
       rpio.open(self.lockerpin, rpio.OUTPUT, rpio.HIGH);
 
 
@@ -152,34 +151,35 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
 };
-ffmpegPlatform.prototype.gpioChange = function (pin) {
-  var that=MODULE
-  if (!that.belldetected) {
-    that.belldetected = true;
-    that.motion.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(that.belldetected, null, "gpioChange");
-    that.log("POWER OFF");
-    rpio.write(that.bellpowerpin, rpio.LOW);
+ffmpegPlatform.prototype.gpioChange = function (pin,callback) {
+  if (!this.belldetected) {
+    this.belldetected = true;
+    this.motion.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(this.belldetected, null, "gpioChange");
+    this.log("POWER OFF");
+    rpio.write(this.bellpowerpin, rpio.LOW);
 
     setTimeout(() => {
-      that.log("POWER ON");
+      this.log("POWER ON");
 
-      rpio.write(that.bellpowerpin, rpio.HIGH);
+      rpio.write(this.bellpowerpin, rpio.HIGH);
 
 
     },250);
 
 
 
-    that.timeout = setTimeout(function () {
-      that.log("Resetting gpio change event throttle flag");
-      that.belldetected = false;
+    this.timeout = setTimeout(function () {
+      this.log("Resetting gpio change event throttle flag");
+      this.belldetected = false;
 
-      that.motion.getCharacteristic(Characteristic.MotionDetected)
-          .updateValue(that.belldetected, null, "gpioChange");
+      this.motion.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(this.belldetected, null, "gpioChange");
 
     }, 11*1000);
   }
+  callback();
+
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
   if(turnOn===Characteristic.LockTargetState.UNSECURED) {
@@ -208,7 +208,6 @@ ffmpegPlatform.prototype.getmotion =  function (callback) {
 
   this.log("getmotion");
 
-  var self = this;
 
   callback(null, this.belldetected);
 };
