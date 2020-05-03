@@ -156,7 +156,8 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
   var that=MODULE
   if (!that.belldetected) {
     that.belldetected = true;
-
+    that.motion.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(that.belldetected, null, "gpioChange");
     that.log("POWER OFF");
     rpio.write(that.bellpowerpin, rpio.LOW);
 
@@ -167,8 +168,7 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
 
 
     },250);
-    that.motion.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(that.belldetected, null, "gpioChange");
+
 
 
     that.timeout = setTimeout(function () {
@@ -178,7 +178,7 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
       that.motion.getCharacteristic(Characteristic.MotionDetected)
           .updateValue(that.belldetected, null, "gpioChange");
 
-    }, 1000);
+    }, 11*1000);
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
