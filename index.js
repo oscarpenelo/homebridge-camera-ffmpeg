@@ -134,7 +134,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       cameraAccessory.addService(self.switch);
 
       self.switch.getCharacteristic(Characteristic.LockTargetState)
-          .on('set', button.setlocker.bind(self))
+          .on('set', self.setlocker.bind(self))
 
 
 
