@@ -136,9 +136,9 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       self.switch.getCharacteristic(Characteristic.LockTargetState)
           .on('set', self.setlocker.bind(self))
 
-      self.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
+      self.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
-      self.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(0)
+      self.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
 
       var cameraSource = new FFMPEG(hap, cameraConfig, self.log, videoProcessor, interfaceName);
       cameraAccessory.configureCameraSource(cameraSource);
@@ -181,8 +181,10 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
-  if(turnOn===1) {
+  if(turnOn===0) {
+    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
 
+    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(0)
 
     this.log("turnon");
 
@@ -190,9 +192,9 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
     rpio.sleep(this.lockerseconds);
     rpio.write(this.lockerpin, rpio.HIGH);
 
-    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
+    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
 
-    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(0)
+    this.switch.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
   }
   else{
     this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
