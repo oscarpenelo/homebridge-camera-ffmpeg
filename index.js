@@ -2,7 +2,7 @@ var Accessory, Service, Characteristic, hap, UUIDGen;
 var rpio = require('rpio');
 
 var FFMPEG = require('./ffmpeg').FFMPEG;
-
+var MODULE=null
 module.exports = function(homebridge) {
   Accessory = homebridge.platformAccessory;
   hap = homebridge.hap;
@@ -148,35 +148,35 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       cameraAccessory.configureCameraSource(cameraSource);
       configuredAccessories.push(cameraAccessory);
     });
-
+    MODULE=self
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
 };
 ffmpegPlatform.prototype.gpioChange = function (pin) {
+  var that=MODULE
+  if (!that.belldetected) {
+    that.belldetected = true;
 
-  if (!this.belldetected) {
-    this.belldetected = true;
-
-    this.log("POWER OFF");
-    rpio.write(this.bellpowerpin, rpio.LOW);
+    that.log("POWER OFF");
+    rpio.write(that.bellpowerpin, rpio.LOW);
 
     setTimeout(() => {
-      this.log("POWER ON");
+      that.log("POWER ON");
 
-      rpio.write(this.bellpowerpin, rpio.HIGH);
+      rpio.write(that.bellpowerpin, rpio.HIGH);
 
 
     },250);
-    this.motion.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(this.belldetected, null, "gpioChange");
+    that.motion.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(that.belldetected, null, "gpioChange");
 
 
-    this.timeout = setTimeout(function () {
-      this.log("Resetting gpio change event throttle flag");
-      this.belldetected = false;
+    that.timeout = setTimeout(function () {
+      that.log("Resetting gpio change event throttle flag");
+      that.belldetected = false;
 
-      this.motion.getCharacteristic(Characteristic.MotionDetected)
-          .updateValue(tjos.belldetected, null, "gpioChange");
+      that.motion.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(that.belldetected, null, "gpioChange");
 
     }, 1000);
   }
@@ -205,6 +205,7 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
 
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
+
   this.log("getmotion");
 
   var self = this;
