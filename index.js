@@ -118,7 +118,11 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
 
 
       cameraAccessory.context.log = self.log;
-      rpio.open(self.bellpowerpin, rpio.OUTPUT, rpio.HIGH);
+
+      rpio.open(self.bellpowerpin, rpio.OUTPUT, rpio.LOW);
+      rpio.sleep(1);
+
+      rpio.write(self.bellpowerpin, rpio.HIGH);
       rpio.open(self.bellpin, rpio.INPUT);
       rpio.poll(self.bellpin, self.gpioChange, rpio.POLL_LOW);
       rpio.open(self.lockerpin, rpio.OUTPUT, rpio.HIGH);
