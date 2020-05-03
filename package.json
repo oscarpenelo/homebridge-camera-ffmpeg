@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge Camera FFmpeg Doorbell",
   "name": "homebridge-camera-ffmpeg-doorbell",
-  "version": "0.1.42",
+  "version": "0.1.43",
   "description": " https://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell",
   "license": "ISC",
   "keywords": [

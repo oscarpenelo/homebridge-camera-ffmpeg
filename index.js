@@ -124,9 +124,9 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       rpio.open(self.lockerpin, rpio.OUTPUT, rpio.HIGH);
 
 
-      var motion = new Service.MotionSensor(cameraName);
-      cameraAccessory.addService(motion);
-      motion.getCharacteristic(Characteristic.MotionDetected)
+      self.motion = new Service.MotionSensor(cameraName);
+      cameraAccessory.addService(self.motion);
+      self.motion.getCharacteristic(Characteristic.MotionDetected)
           .on('get', self.getmotion.bind(self));
 
       self.switch =   new Service.LockMechanism(cameraName)
@@ -149,35 +149,32 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
   }
 };
 ffmpegPlatform.prototype.gpioChange = function (pin) {
-  var self=this
-  var that=this
-  if (!that.belldetected) {
-    that.belldetected = true;
 
-    that.log("POWER OFF");
-    rpio.write(self.bellpowerpin, rpio.LOW);
+  if (!this.belldetected) {
+    this.belldetected = true;
+
+    this.log("POWER OFF");
+    rpio.write(this.bellpowerpin, rpio.LOW);
 
     setTimeout(() => {
-      that.log("POWER ON");
+      this.log("POWER ON");
 
-      rpio.write(self.bellpowerpin, rpio.HIGH);
+      rpio.write(this.bellpowerpin, rpio.HIGH);
 
 
     },250);
-    that.service.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(that.belldetected, null, "gpioChange");
+    this.motion.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(this.belldetected, null, "gpioChange");
 
-    if (that.timeout) clearTimeout(that.timeout);
 
-    that.timeout = setTimeout(function () {
-      that.log("Resetting gpio change event throttle flag");
-      that.bellDetected = false;
+    this.timeout = setTimeout(function () {
+      this.log("Resetting gpio change event throttle flag");
+      this.belldetected = false;
 
-      that.service.getCharacteristic(Characteristic.MotionDetected)
-          .updateValue(that.belldetected, null, "gpioChange");
+      this.motion.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(tjos.belldetected, null, "gpioChange");
 
-      that.timeout = null;
-    }, that.reset);
+    }, 1000);
   }
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
