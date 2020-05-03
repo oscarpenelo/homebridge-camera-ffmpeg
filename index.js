@@ -136,6 +136,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       self.switch.getCharacteristic(Characteristic.LockTargetState)
           .on('set', self.setlocker.bind(self))
 
+      self.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
 
 
       var cameraSource = new FFMPEG(hap, cameraConfig, self.log, videoProcessor, interfaceName);
@@ -190,6 +191,10 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
     this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
 
     callback()
+  }
+  else{
+    this.switch.getCharacteristic(Characteristic.LockCurrentState).updateValue(0)
+
   }
 }
 ffmpegPlatform.prototype.getmotion =  function (callback) {
