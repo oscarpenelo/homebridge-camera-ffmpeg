@@ -150,7 +150,8 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
   }
 };
 ffmpegPlatform.prototype.gpioChange = function (pin) {
-  var that=self
+  var self=this
+  var that=this
   if (!that.belldetected) {
     that.belldetected = true;
 
@@ -186,10 +187,10 @@ ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
 
     this.log("turnon");
 
-    rpio.write(self.lockerpin, rpio.LOW);
-    rpio.sleep(self.lockerseconds);
-    rpio.write(self.lockerpin, rpio.HIGH);
-    self.switch.getCharacteristic(Characteristic.On).updateValue(false);
+    rpio.write(this.lockerpin, rpio.LOW);
+    rpio.sleep(this.lockerseconds);
+    rpio.write(this.lockerpin, rpio.HIGH);
+    this.switch.getCharacteristic(Characteristic.On).updateValue(false);
 
     callback()
   }
