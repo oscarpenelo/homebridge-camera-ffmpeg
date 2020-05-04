@@ -151,17 +151,18 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
   }
 };
 ffmpegPlatform.prototype.gpioChange = function (pin) {
-  if (!this.belldetected) {
-    this.belldetected = true;
-    this.motion.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(this.belldetected, null, "gpioChange");
-    this.log("POWER OFF");
-    rpio.write(this.bellpowerpin, rpio.LOW);
+  self=this
+  if (!self.belldetected) {
+    self.belldetected = true;
+    self.motion.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(self.belldetected, null, "gpioChange");
+    self.log("POWER OFF");
+    rpio.write(self.bellpowerpin, rpio.LOW);
 
     setTimeout(() => {
-      this.log("POWER ON");
+      self.log("POWER ON");
 
-      rpio.write(this.bellpowerpin, rpio.HIGH);
+      rpio.write(self.bellpowerpin, rpio.HIGH);
 
 
     },250);
@@ -169,10 +170,10 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
 
 
     this.timeout = setTimeout(function () {
-      this.belldetected = false;
+      self.belldetected = false;
 
-      this.motion.getCharacteristic(Characteristic.MotionDetected)
-          .updateValue(this.belldetected, null, "gpioChange");
+      self.motion.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(self.belldetected, null, "gpioChange");
 
     }, 11*1000);
   }
