@@ -170,7 +170,6 @@ ffmpegPlatform.prototype.gpioChange = function (pin) {
 
 
     this.timeout = setTimeout(function () {
-      this.log("Resetting gpio change event throttle flag");
       this.belldetected = false;
 
       this.motion.getCharacteristic(Characteristic.MotionDetected)
