@@ -151,7 +151,7 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
 };
-ffmpegPlatform.prototype.gpioChange = function (pin,callback) {
+ffmpegPlatform.prototype.gpioChange = function (pin) {
   if (!this.belldetected) {
     this.belldetected = true;
     this.motion.getCharacteristic(Characteristic.MotionDetected)
