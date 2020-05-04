@@ -178,7 +178,6 @@ ffmpegPlatform.prototype.gpioChange = function (pin,callback) {
 
     }, 11*1000);
   }
-  callback();
 
 };
 ffmpegPlatform.prototype.setlocker = function  (turnOn, callback) {
