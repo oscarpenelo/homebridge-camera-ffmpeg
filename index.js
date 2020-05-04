@@ -147,7 +147,6 @@ ffmpegPlatform.prototype.didFinishLaunching = function() {
       cameraAccessory.configureCameraSource(cameraSource);
       configuredAccessories.push(cameraAccessory);
     });
-    MODULE=self
     self.api.publishCameraAccessories("Camera-ffmpeg", configuredAccessories);
   }
 };
