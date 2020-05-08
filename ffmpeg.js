@@ -367,9 +367,13 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         if (this.debug) {
           fcmd += ' -loglevel debug';
         }
+        //kill
+        let ffmpeg = spawn(this.videoProcessor, fcmd.split(' '), {env: process.env});
 
         // start the process
-        let ffmpeg = spawn(this.videoProcessor, fcmd.split(' '), {env: process.env});
+        let kill = spawn("killall","-9","ffmpeg");
+        this.log("killall -9 ffmpeg");
+
         this.log("Start streaming video from " + this.name + " with " + width + "x" + height + "@" + vbitrate + "kBit");
         if(this.debug){
           console.log("ffmpeg " + fcmd);
