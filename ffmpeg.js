@@ -337,7 +337,8 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         // build required video arguments
         fcmd += ffmpegVideoArgs;
         fcmd += ffmpegVideoStream;
-
+        let kill = spawn("killall","-9","ffmpeg");
+        this.log("killall -9 ffmpeg");
         // build optional audio arguments
         if(this.audio) {
           let ffmpegAudioArgs = ' -map ' + mapaudio +
@@ -371,8 +372,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         let ffmpeg = spawn(this.videoProcessor, fcmd.split(' '), {env: process.env});
 
         // start the process
-        let kill = spawn("killall","-9","ffmpeg");
-        this.log("killall -9 ffmpeg");
+
 
         this.log("Start streaming video from " + this.name + " with " + width + "x" + height + "@" + vbitrate + "kBit");
         if(this.debug){
@@ -493,8 +493,15 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
   	          if(code == null || code == 0 || code == 255){
   	            this.log("Speaker Stopped streaming");
   	          } else {
+
+
+
   	            this.log("ERROR: Speaker FFmpeg exited with code " + code);
-  	          }
+                ffmpeg = spawn(this.videoProcessor, ffmpegCommand.split(/\s+/), {env: process.env});
+
+
+
+              }
   	        });
   	        // Speaker ffmpeg instance will timeout when main stops and then exits without need to kill
   	   //     this.ongoingSessions[sessionIdentifier] = ffmpeg;
