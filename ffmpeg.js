@@ -337,7 +337,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         // build required video arguments
         fcmd += ffmpegVideoArgs;
         fcmd += ffmpegVideoStream;
-        let kill = spawn("killall",["-9","ffmpeg"]);
+        let kill = spawn("/usr/bin/killall",["-9","ffmpeg"]);
         this.log("killall -9 ffmpeg");
         // build optional audio arguments
         if(this.audio) {

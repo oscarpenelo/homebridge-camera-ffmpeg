@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge Camera FFmpeg Doorbell",
   "name": "homebridge-camera-ffmpeg-doorbell",
-  "version": "0.1.56",
+  "version": "0.1.57",
   "description": " https://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell",
   "license": "ISC",
   "keywords": [
@@ -30,5 +30,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": ""
+  "author": "Òscar Penelo",
+  "bugs": {
+    "url": "https://github.com/oscarpenelo/homebridge-camera-ffmpeg-doorbell/issues"
+  },
+  "devDependencies": {}
 }
